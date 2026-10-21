@@ -1,10 +1,10 @@
-# ⚡ Django All Form Fields Showcase (Django Omniverse)
+## Django All Form Fields Showcase
 
 A Django demo application showcasing built-in Django form fields, custom composite fields (`MultiValueField`, `ComboField`), HTML5 inputs, file uploads, and server-side validation. It is intended for local development and is not configured as a production deployment.
 
 ---
 
-## 🚀 Quick Start
+### Quick Start
 
 From this directory (`django_form_fields_app`), create and activate a virtual environment, then install the dependencies:
 
@@ -20,7 +20,7 @@ python manage.py runserver
 ```
 
 Then open your browser at:
-👉 **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+**[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
 
 The development server uses a local-only secret key by default. Before deploying, set `DJANGO_SECRET_KEY` to a private, randomly generated value, set `DJANGO_DEBUG=false`, and set `DJANGO_ALLOWED_HOSTS` to a comma-separated list of your hostnames. Production deployment also requires completing Django's deployment checklist.
 
@@ -65,7 +65,7 @@ The development server uses a local-only secret key by default. Before deploying
 
 ---
 
-## 🎨 Key Features & UI Highlights
+## Key Features & UI Highlights
 
 - **Dark Glassmorphic UI**: Ambient glows, blur effects, clean gradients, and responsive typography using Google Fonts (`Outfit` + `JetBrains Mono`).
 - **Interactive Sticky Category Nav**: Easily jump across 8 categorized field sections.
@@ -75,7 +75,7 @@ The development server uses a local-only secret key by default. Before deploying
 
 ---
 
-## 📂 Project Architecture
+## Project Architecture
 
 ```
 django_form_fields_app/

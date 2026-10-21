@@ -1,0 +1,4 @@
+# System Configuration Template
+version: 1.0
+environment: development
+debug: true

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django Form Fields Showcase{% endblock %}</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main CSS with cache busting -->
+    <link rel="stylesheet" href="/static/css/styles.css?v=2.0">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="/" class="brand-link">
+                    <span class="brand-badge">Django</span>
+                    <span class="brand-title">Form Fields Showcase</span>
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="/" class="header-nav-link active">All Form Fields</a>
+                <a href="/gallery/" class="header-nav-link">Image Gallery</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; Django Form Fields Showcase &bull; Mobile &amp; Web Development</p>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

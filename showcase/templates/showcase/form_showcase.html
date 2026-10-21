@@ -1,0 +1,205 @@
+{% extends "showcase/base.html" %}
+
+{% block title %}Django Form Fields Demonstration{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- PAGE INTRO -->
+    <div class="page-header">
+        <h2>Django Form Fields Showcase</h2>
+        <p class="text-muted">A complete demonstration of Django's core form fields, input widgets, and server-side validation.</p>
+    </div>
+
+    <!-- SUBMISSION RESULTS (IF SUBMITTED & VALID) -->
+    {% if submitted %}
+    <div class="alert alert-success" id="submission-results">
+        <h4 class="alert-heading">✓ Form Validated &amp; Submitted Successfully!</h4>
+        <p>All inputs passed Django server-side validation. Here is the parsed <code>form.cleaned_data</code>:</p>
+
+        {% if uploaded_files_summary %}
+        <div class="uploaded-files-box">
+            <strong>Uploaded Files:</strong>
+            <ul>
+                {% for f in uploaded_files_summary %}
+                <li>
+                    <strong>{{ f.name }}</strong> ({{ f.size_bytes }} bytes) &bull; <code>{{ f.content_type }}</code> &bull; Saved to: <code>media/{{ f.saved_path }}</code>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 45px;">#</th>
+                        <th>Field Name</th>
+                        <th>Field Label</th>
+                        <th>Field Type</th>
+                        <th>Cleaned Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cleaned_data_display %}
+                    <tr>
+                        <td style="color: #64748b;">{{ forloop.counter }}</td>
+                        <td><code>{{ item.name }}</code></td>
+                        <td><strong>{{ item.label }}</strong></td>
+                        <td><span class="badge-type">{{ item.type }}</span></td>
+                        <td>
+                            <pre class="clean-val">{{ item.value }}</pre>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 16px;">
+            <a href="/" class="btn btn-sm btn-outline">Fill Another Form</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- VALIDATION ERRORS BANNER -->
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Please correct the following errors:</h4>
+        <ul class="error-list">
+            {% for field, error_list in form.errors.items %}
+                <li>
+                    <strong>{{ field }}:</strong>
+                    {% for err in error_list %}<span>{{ err }}</span>{% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- MAIN FORM -->
+    <div class="card form-card">
+        <div class="form-card-header">
+            <h3>Student Profile &amp; Input Fields</h3>
+            <span class="form-card-badge">32 Form Fields</span>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="django-form" novalidate>
+            {% csrf_token %}
+            {{ form.hidden_field }}
+
+            {% for sec in sections %}
+            <div class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">{{ sec.icon }}</span>
+                    <div>
+                        <h4 class="section-title">{{ sec.title }}</h4>
+                        {% if sec.desc %}
+                        <p class="section-desc">{{ sec.desc }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    {% for bound_field in form %}
+                        {% if bound_field.name in sec.fields %}
+                        <div class="form-group {% if bound_field.errors %}has-error{% endif %} {% if bound_field.name == 'textarea_char_field' or bound_field.name == 'json_field' or bound_field.name == 'multiple_choice_checkboxes' %}full-width{% endif %}">
+                            <label for="{{ bound_field.id_for_label }}" class="form-label">
+                                {{ bound_field.label }}
+                                {% if bound_field.field.required %}
+                                    <span class="text-danger" title="Required">*</span>
+                                {% else %}
+                                    <span class="badge-optional">optional</span>
+                                {% endif %}
+                            </label>
+
+                            <div class="field-control">
+                                {{ bound_field }}
+                            </div>
+
+                            {% if bound_field.help_text %}
+                            <small class="form-text">{{ bound_field.help_text }}</small>
+                            {% endif %}
+
+                            {% if bound_field.errors %}
+                            <div class="field-error">
+                                {% for error in bound_field.errors %}
+                                    <div>✕ {{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- FORM BUTTONS -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Submit Form
+                </button>
+                <button type="button" id="btn-prefill" class="btn btn-secondary">
+                    Fill Sample Data
+                </button>
+                <button type="reset" class="btn btn-outline">
+                    Reset
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.getElementById('btn-prefill').addEventListener('click', function() {
+        const form = document.getElementById('django-form');
+        const setVal = (name, val) => {
+            const el = form.querySelector(`[name="${name}"]`);
+            if (el) el.value = val;
+        };
+
+        setVal('char_field', 'Alex Johnson');
+        setVal('textarea_char_field', 'Third-year computer science student taking Mobile Development coursework.');
+        setVal('password_field', 'StudentPass2026!');
+        setVal('slug_field', 'student-coursework-demo');
+        setVal('uuid_field', '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d');
+        setVal('regex_field', 'CSB-2026');
+        setVal('email_field', 'alex.johnson@example.edu');
+        setVal('url_field', 'https://github.com/example');
+        setVal('integer_field', '21');
+        setVal('float_field', '88.5');
+        setVal('decimal_field', '1500.00');
+        setVal('date_field', '2003-05-14');
+        setVal('time_field', '09:30:00');
+        setVal('datetime_field', '2026-11-15T10:00');
+        setVal('duration_field', '02:30:00');
+        setVal('choice_field_select', 'django');
+        setVal('typed_choice_field', '3');
+        setVal('ip_address_field', '192.168.1.100');
+        setVal('json_field', JSON.stringify({
+            "theme": "light",
+            "notifications_enabled": true,
+            "language": "en"
+        }, null, 2));
+        setVal('combo_field', 'alex.johnson@example.edu');
+
+        const coord0 = form.querySelector('[name="coordinates_multivalue_0"]');
+        const coord1 = form.querySelector('[name="coordinates_multivalue_1"]');
+        if (coord0) coord0.value = '-1.286389';
+        if (coord1) coord1.value = '36.817223';
+
+        const splitDate = form.querySelector('[name="split_datetime_field_0"]');
+        const splitTime = form.querySelector('[name="split_datetime_field_1"]');
+        if (splitDate) splitDate.value = '2026-12-01';
+        if (splitTime) splitTime.value = '23:59:00';
+
+        const originalText = this.innerText;
+        this.innerText = '✓ Form Filled!';
+        setTimeout(() => { this.innerText = originalText; }, 1500);
+    });
+</script>
+{% endblock %}

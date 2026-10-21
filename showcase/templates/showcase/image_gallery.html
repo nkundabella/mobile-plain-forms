@@ -1,0 +1,144 @@
+{% extends "showcase/base.html" %}
+
+{% block title %}Image Gallery — Django ImageShowcase Model{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h2>Image Gallery</h2>
+        <p class="text-muted">Demonstrating Django's <code>ImageField</code>, model persistence, and Pillow image handling.</p>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="msg-list" style="margin-bottom: 20px;">
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- FEATURED IMAGE -->
+    {% if featured_image %}
+    <div class="card featured-card">
+        <div class="featured-img-wrap">
+            {% if featured_image.image %}
+            <img
+                src="{{ featured_image.image.url }}"
+                alt="{{ featured_image.alt_text }}"
+                id="featured-img-display"
+            />
+            {% else %}
+            <p class="text-muted">No image uploaded.</p>
+            {% endif %}
+        </div>
+        <div class="featured-info" style="flex: 1;">
+            <span class="badge badge-light" style="margin-bottom: 8px;">Featured</span>
+            <h3 style="margin-bottom: 8px;">{{ featured_image.title }}</h3>
+            <p class="text-muted" style="margin-bottom: 12px;">{{ featured_image.description|default:"No description provided." }}</p>
+            <table class="table table-bordered" style="max-width: 500px;">
+                <tr>
+                    <th style="width: 120px;">Category</th>
+                    <td>{{ featured_image.get_category_display }}</td>
+                </tr>
+                <tr>
+                    <th>Alt Text</th>
+                    <td>{{ featured_image.alt_text }}</td>
+                </tr>
+                <tr>
+                    <th>File Size</th>
+                    <td>{{ featured_image.file_size_display }}</td>
+                </tr>
+                <tr>
+                    <th>Uploaded</th>
+                    <td>{{ featured_image.created_at|date:"N j, Y H:i" }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- GALLERY GRID -->
+    {% if images %}
+    <div class="card" style="margin-bottom: 24px;">
+        <h4 style="margin-bottom: 15px;">Uploaded Images ({{ total_images }})</h4>
+        <div class="gallery-grid">
+            {% for img in images %}
+            <div class="gallery-card" onclick="setFeatured('{{ img.image.url }}', '{{ img.alt_text|escapejs }}')" style="cursor: pointer;">
+                {% if img.image %}
+                <img src="{{ img.image.url }}" alt="{{ img.alt_text }}" loading="lazy" />
+                {% endif %}
+                <div style="margin-top: 8px;">
+                    <strong>{{ img.title }}</strong>
+                    <div class="text-muted" style="font-size: 12px;">{{ img.category }} &bull; {{ img.file_size_display }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- UPLOAD FORM -->
+    <div class="card">
+        <h4 style="margin-bottom: 6px;">Upload New Image</h4>
+        <p class="text-muted" style="margin-bottom: 18px;">Upload an image instance to test the ImageField backend.</p>
+
+        {% if upload_form.errors %}
+        <div class="alert alert-danger">
+            <strong>Please fix the errors below:</strong>
+            <ul class="error-list">
+                {% for field, errs in upload_form.errors.items %}
+                    <li><strong>{{ field }}:</strong> {% for e in errs %}<span>{{ e }}</span>{% endfor %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-grid">
+                {% for field in upload_form %}
+                <div class="form-group {% if field.name == 'description' %}full-width{% endif %}">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    <div class="field-control">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                    <small class="form-text">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="field-error">
+                        {% for error in field.errors %}<div>{{ error }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Upload Image</button>
+                <a href="/" class="btn btn-outline">Back to Form Showcase</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function setFeatured(url, alt) {
+    const img = document.getElementById('featured-img-display');
+    if (img) {
+        img.src = url;
+        img.alt = alt;
+    }
+}
+</script>
+{% endblock %}
